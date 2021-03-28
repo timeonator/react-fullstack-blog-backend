@@ -3,16 +3,44 @@ import bodyParser,{json} from 'body-parser';
 import MongoClient from 'mongodb'
 
 const app = express();
+const uri = 'mongodb://localhost:27017';
 
-const withDB = (op) => {
-
+const withDB = async (operations) => {
+    try {
+        const articleName = req.params.name;
+        const client = await MongoClient.connect(uri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+        const db = client.db('myDB');
+        operations(db)
+        client.close();
+    } catch(error) {
+        res.send(500).send({message:'Something went wrong', error});      
+    }
 }
 
 app.use(json())
-app.post('/api/articles/:name/upvote', (req,res) => {
-    let name = req.params.name;
-    articleInfo[name].upvotes += 1;
-    res.status(200).send(`${name} now has ${articleInfo[name].upvotes} upvotes!`);
+app.post('/api/articles/:name/upvote', async (req,res) => {
+    const articleName = req.params.name;
+    try {    
+        const client = await MongoClient.connect(uri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        })
+        const db = client.db('myDB');
+        const articleInfo = await db.collection('articles').findOne({name : articleName});
+
+        await db.collection('articles').updateOne({name:articleName},{
+            '$set': {
+                upvotes : 1 +articleInfo.upvotes
+            }
+        })
+        const updatedArticleInfo = await db.collection('articles').findOne({name : articleName});
+        res.status(200).json(updatedArticleInfo);
+    } catch(err) {
+        res.status(500).send("Something went wrong")
+    }
 });
 app.post('/api/articles/:name/add-comment', (req,res) =>{
     let name = req.params.name;
@@ -23,8 +51,7 @@ app.post('/api/articles/:name/add-comment', (req,res) =>{
 })
 
 
-app.get('/api/article/all', (async (req,res) => {
-    const uri = 'mongodb://localhost:27017';
+app.get('/api/articles/all', (async (req,res) => {
     try {
         const articleName = req.params.name;
         const client = await MongoClient.connect(uri, {
@@ -43,8 +70,7 @@ app.get('/api/article/all', (async (req,res) => {
         res.send(500).send({message:'Something went wrong', error});      
     }
 }));
-app.get('/api/article/:name', (async (req,res) => {
-    const uri = 'mongodb://localhost:27017';
+app.get('/api/articles/:name', (async (req,res) => {
     try {
         const articleName = req.params.name;
         const client = await MongoClient.connect(uri, {
