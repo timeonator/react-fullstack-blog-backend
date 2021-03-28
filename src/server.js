@@ -4,6 +4,10 @@ import MongoClient from 'mongodb'
 
 const app = express();
 
+const withDB = (op) => {
+
+}
+
 app.use(json())
 app.post('/api/articles/:name/upvote', (req,res) => {
     let name = req.params.name;
@@ -17,6 +21,8 @@ app.post('/api/articles/:name/add-comment', (req,res) =>{
     articleInfo[name].comments.push({username,text});
     res.status(200).send(articleInfo[name]);
 })
+
+
 app.get('/api/article/all', (async (req,res) => {
     const uri = 'mongodb://localhost:27017';
     try {
@@ -48,7 +54,7 @@ app.get('/api/article/:name', (async (req,res) => {
         const db = client.db('myDB');
         const articles = db.collection('articles');
         const query = {name:articleName}; const options = {};
-        const articleInfo = articles.find(query).toArray();
+        const articleInfo = articles.findOne(query).toArray();
         res.send(await articleInfo);   
         await client.close();
 
