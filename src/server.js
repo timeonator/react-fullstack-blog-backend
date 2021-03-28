@@ -54,7 +54,7 @@ app.get('/api/article/:name', (async (req,res) => {
         const db = client.db('myDB');
         const articles = db.collection('articles');
         const query = {name:articleName}; const options = {};
-        const articleInfo = articles.findOne(query).toArray();
+        const articleInfo = articles.find(query).toArray();
         res.send(await articleInfo);   
         await client.close();
 
