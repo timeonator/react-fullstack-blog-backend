@@ -49,23 +49,15 @@ app.post('/api/articles/:name/add-comment', (req,res) =>{
 
 
 app.get('/api/articles/all', (async (req,res) => {
-    try {
+    wrapArticleDB(async (db) => {
         const articleName = req.params.name;
-        const client = await MongoClient.connect(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
-        const db = client.db('myDB');
         const articles = db.collection('articles');
-        const query = "{}"; const options = "{}";
+        const query = "{}";
         const cursor = articles.find(query);
         const articleInfo = (await cursor.toArray());
-        await client.close();
-        res.send(articleInfo);
-    } 
-    catch(error) {
-        res.send(500).send({message:'Something went wrong', error});      
-    }
+        res.status(200).send(articleInfo);
+    });
+
 }));
 app.get('/api/articles/:name', (async (req,res) => {
     try {
