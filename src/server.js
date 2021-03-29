@@ -60,23 +60,13 @@ app.get('/api/articles/all', (async (req,res) => {
 
 }));
 app.get('/api/articles/:name', (async (req,res) => {
-    try {
-        const articleName = req.params.name;
-        const client = await MongoClient.connect(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        const db = client.db('myDB');
+    wrapArticleDB(async (db) => {
+        const articleName = req.params.name;       
         const articles = db.collection('articles');
         const query = {name:articleName}; const options = {};
-        const articleInfo = articles.find(query).toArray();
-        res.send(await articleInfo);   
-        await client.close();
-
-    } 
-    catch(error) {
-        res.send(500).send({message:'Something went wrong', error});      
-    }
+        const articleInfo = await articles.find(query).toArray();
+        res.send(articleInfo);   
+    })
 }));
 
 app.get('/hello',(req,res) => res.send('hello'));
