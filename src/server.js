@@ -13,17 +13,16 @@ const wrapArticleDB = async (operation) => {
         })
         const db = client.db('myDB');
         operation(db);
-        // client.close();              
+          
     } catch(error) {
         res.status(500).send("Wrap Something went wrong")
     }
-
-
 }
 
 app.use(json())
-app.post('/api/articles/:name/upvote', async (req,res) => {
 
+
+app.post('/api/articles/:name/upvote', async (req,res) => {
     wrapArticleDB(async (db) => {
         const articleName = req.params.name;
         const articleInfo = await db.collection('articles').findOne({name : articleName});
@@ -56,16 +55,18 @@ app.get('/api/articles/all', (async (req,res) => {
         const cursor = articles.find(query);
         const articleInfo = (await cursor.toArray());
         res.status(200).send(articleInfo);
+        cursor.close();
     });
-
 }));
+
+
 app.get('/api/articles/:name', (async (req,res) => {
     wrapArticleDB(async (db) => {
         const articleName = req.params.name;       
         const articles = db.collection('articles');
         const query = {name:articleName}; const options = {};
         const articleInfo = await articles.find(query).toArray();
-        res.send(articleInfo);   
+        res.status(200).send(articleInfo);   
     })
 }));
 
