@@ -1,6 +1,6 @@
 {
   "name": "react-fullstack-blog-backend",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/timeonator/react-fullstack-blog-backend#readme",
   "dependencies": {
-    "@babel/core": "^7.13.10",
-    "@babel/node": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
+    "@babel/core": "^7.13.14",
+    "@babel/node": "^7.13.13",
+    "@babel/preset-env": "^7.13.12",
     "express": "^4.17.1",
     "mongodb": "^3.6.5"
   }
