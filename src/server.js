@@ -12,8 +12,7 @@ const wrapArticleDB = async (operation) => {
             useUnifiedTopology: true,
         })
         const db = client.db('myDB');
-        operation(db);
-          
+        operation(db);         
     } catch(error) {
         res.status(500).send("Wrap Something went wrong")
     }
@@ -39,11 +38,20 @@ app.post('/api/articles/:name/upvote', async (req,res) => {
 
 
 app.post('/api/articles/:name/add-comment', (req,res) =>{
-    let name = req.params.name;
-    let {username,text} = req.body
-    console.log (name, username, text);
-    articleInfo[name].comments.push({username,text});
-    res.status(200).send(articleInfo[name]);
+    let {username,text} = req.body;
+    const articleName = req.params.name;
+
+    wrapArticleDB(async (db) => {
+        const articleInfo = await db.collection('articles').findOne({name : articleName});
+        console.log(articleInfo);
+        articleInfo.comments.push({username,text});
+        await db.collection('articles').updateOne({name:articleName},{
+            '$set': {
+                comments : articleInfo.comments
+            }
+        })
+    res.status(200).send(articleInfo);        
+    })
 })
 
 
@@ -65,7 +73,7 @@ app.get('/api/articles/:name', (async (req,res) => {
         const articleName = req.params.name;       
         const articles = db.collection('articles');
         const query = {name:articleName}; const options = {};
-        const articleInfo = await articles.find(query).toArray();
+        const articleInfo = (await articles.find(query).toArray())[0];
         res.status(200).send(articleInfo);   
     })
 }));
