@@ -19,10 +19,11 @@
   },
   "homepage": "https://github.com/timeonator/react-fullstack-blog-backend#readme",
   "dependencies": {
-    "@babel/core": "^7.13.14",
-    "@babel/node": "^7.13.13",
-    "@babel/preset-env": "^7.13.12",
+    "@babel/core": "^7.14.3",
+    "@babel/node": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
     "express": "^4.17.1",
-    "mongodb": "^3.6.5"
+    "mongodb": "^3.6.9",
+    "npm": "^7.16.0"
   }
 }
